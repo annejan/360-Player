@@ -34,30 +34,22 @@
 			}
 		</script>
 		<script src="three.min.js"></script>
-		<script src="dash.all.min.js"></script>
+		<script src="cardboard.js"></script>
 		<script src="panorama.js"></script>
 		<script>
-			var video, scene, raw, player;
+			var video, cardboard, raw, scene;
 			video = true;
 			raw = true;
+			cardboard = false;
 		</script>
 	</head>
 	<body id="container">
-		<!--<button onclick="video.play(); this.style.display='none';">Play</button>-->
-		<!--<video data-dashjs-player id="video" controls preload="auto"  autoplay src="dashcast.mpd">-->
-			<!-- <source src="out.mp4" type="video/mp4">
-			<!-- <source src="dak-raw.webm" type="video/webm"> -->
-		 <video autoplay loop id="video">
+		<button onclick="video.play(); this.style.display='none';">Play</button>
+		<button onclick="launchIntoFullscreen(document.documentElement); this.style.display='none';" style="width: 80px; top: 100px;">FullScreen</button>
+		<img src="raw.jpg" id="img" alt="360 image" />
+		<video id="video" controls class="video-js" preload="auto">
+			<source src="dak-raw.mp4" type="video/mp4">
+			<source src="dak-raw.webm" type="video/webm">
 		</video>
-		<script>
-			(function(){
-				var url = "dashcast.mpd";
-				player = dashjs.MediaPlayer().create();
-				player.clearDefaultUTCTimingSources();
-//				player.setLiveDelayFragmentCount(2);
-//				player.setFragmentLoaderRetryAttempts(5);
-				player.initialize(document.querySelector("#video"), url, true);
-			})();
-		</script>
 	</body>
 </html>
