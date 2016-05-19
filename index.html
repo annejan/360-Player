@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>360 minimalist</title>
+		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+		<meta http-equiv="x-ua-compatible" content="IE=edge">
+		<style>
+			@-ms-viewport { width: device-width; }
+			@media only screen and (min-device-width: 800px) { html { overflow:hidden; } }
+			html { height:100%; }
+			body { height:100%; overflow:hidden; margin:0; padding:0; font-family: Lato, Helvetica, sans-serif; font-size:16px; color:#FFFFFF; background-color:#000000; }
+			button { display: block; width: 42px; height: 42px; position: absolute; margin: auto; left: 0; right: 0; top: 0; bottom: 0 }
+			img, video { display: none; }
+		</style>
+		<script id="vertex_shader" type="x-shader/x-vertex">
+			varying vec3 vNormal;
+			void main() {
+				vNormal = normal;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			}
+		</script>
+		<script id="fragment_shader" type="x-shader/x-fragment">
+			uniform sampler2D texture;
+			varying vec3 vNormal;
+			void main() {
+				vec3 abNormal = vNormal;
+				abNormal.y += .666; // weird way of scaling
+				abNormal.x = -abNormal.x; // flip x
+				vec2 uv = normalize( abNormal ).zx * 0.5 + 0.5; // rotate texture
+				vec3 color = texture2D( texture, uv ).rgb; // map color
+				if ( vNormal.y < - .666 ) color = vec3( .13, .37, 1.0+vNormal.y ); // bottom deadzone
+				gl_FragColor = vec4( color, 1.0 );
+			}
+		</script>
+		<script src="three.min.js"></script>
+		<script src="dash.all.min.js"></script>
+		<script src="panorama.js"></script>
+		<script>
+			var video, scene, raw, player;
+			video = true;
+			raw = true;
+		</script>
+	</head>
+	<body id="container">
+		<!--<button onclick="video.play(); this.style.display='none';">Play</button>-->
+		<!--<video data-dashjs-player id="video" controls preload="auto"  autoplay src="dashcast.mpd">-->
+			<!-- <source src="out.mp4" type="video/mp4">
+			<!-- <source src="dak-raw.webm" type="video/webm"> -->
+		 <video autoplay loop id="video">
+		</video>
+		<script>
+			(function(){
+				var url = "dashcast.mpd";
+				player = dashjs.MediaPlayer().create();
+				player.clearDefaultUTCTimingSources();
+//				player.setLiveDelayFragmentCount(2);
+//				player.setFragmentLoaderRetryAttempts(5);
+				player.initialize(document.querySelector("#video"), url, true);
+			})();
+		</script>
+	</body>
+</html>
