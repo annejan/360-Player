@@ -1,55 +1,92 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 	<head>
+		<meta charset="utf-8">
 		<title>360 minimalist</title>
-		<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+		<meta name="theme-color" content="#000000">
+		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-		<meta http-equiv="x-ua-compatible" content="IE=edge">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 		<style>
-			@-ms-viewport { width: device-width; }
-			@media only screen and (min-device-width: 800px) { html { overflow:hidden; } }
-			html { height:100%; }
-			body { height:100%; overflow:hidden; margin:0; padding:0; font-family: Lato, Helvetica, sans-serif; font-size:16px; color:#FFFFFF; background-color:#000000; }
-			button { display: block; width: 42px; height: 42px; position: absolute; margin: auto; left: 0; right: 0; top: 0; bottom: 0 }
+			html, body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				background: #000;
+				color: #fff;
+				font: 16px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, sans-serif;
+				overscroll-behavior: none;
+			}
+			#container {
+				position: fixed;
+				inset: 0;
+				touch-action: none;
+				cursor: grab;
+			}
+			#container:active { cursor: grabbing; }
+			canvas { display: block; }
 			img, video { display: none; }
+			#ui {
+				position: fixed;
+				inset: 0;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				gap: 12px;
+				pointer-events: none;
+			}
+			#ui button {
+				pointer-events: auto;
+				min-width: 160px;
+				padding: 12px 20px;
+				border: 1px solid rgba(255, 255, 255, 0.6);
+				border-radius: 999px;
+				background: rgba(0, 0, 0, 0.55);
+				color: #fff;
+				font: inherit;
+				cursor: pointer;
+				backdrop-filter: blur(6px);
+			}
+			#ui button:hover, #ui button:focus-visible { background: rgba(255, 255, 255, 0.2); outline: none; }
+			#ui button[hidden] { display: none; }
+			#status {
+				position: fixed;
+				left: 0;
+				right: 0;
+				bottom: env(safe-area-inset-bottom, 0);
+				padding: 8px 12px;
+				font-size: 13px;
+				text-align: center;
+				color: rgba(255, 255, 255, 0.7);
+				pointer-events: none;
+			}
+			#status:empty { display: none; }
 		</style>
-		<script id="vertex_shader" type="x-shader/x-vertex">
-			varying vec3 vNormal;
-			void main() {
-				vNormal = normal;
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./vendor/three/three.module.js",
+					"three/addons/": "./vendor/three/addons/"
+				}
 			}
-		</script>
-		<script id="fragment_shader" type="x-shader/x-fragment">
-			uniform sampler2D texture;
-			varying vec3 vNormal;
-			void main() {
-				vec3 abNormal = vNormal;
-				abNormal.y += .666; // weird way of scaling
-				abNormal.x = -abNormal.x; // flip x
-				vec2 uv = normalize( abNormal ).zx * 0.5 + 0.5; // rotate texture
-				vec3 color = texture2D( texture, uv ).rgb; // map color
-				if ( vNormal.y < - .666 ) color = vec3( .13, .37, 1.0+vNormal.y ); // bottom deadzone
-				gl_FragColor = vec4( color, 1.0 );
-			}
-		</script>
-		<script src="three.min.js"></script>
-		<script src="cardboard.js"></script>
-		<script src="panorama.js"></script>
-		<script>
-			var video, cardboard, raw, scene;
-			video = true;
-			raw = true;
-			cardboard = false;
 		</script>
 	</head>
-	<body id="container">
-		<button onclick="video.play(); this.style.display='none';">Play</button>
-		<button onclick="launchIntoFullscreen(document.documentElement); this.style.display='none';" style="width: 80px; top: 100px;">FullScreen</button>
-		<img src="raw.jpg" id="img" alt="360 image" />
-		<video id="video" controls class="video-js" preload="auto">
-			<source src="dak-raw.mp4" type="video/mp4">
-			<source src="dak-raw.webm" type="video/webm">
-		</video>
+	<body>
+		<div id="container"></div>
+		<div id="ui">
+			<button id="play" type="button">Play</button>
+			<button id="motion" type="button" hidden>Enable motion control</button>
+			<button id="fullscreen" type="button">Fullscreen</button>
+			<button id="vr" type="button">Cardboard (side by side)</button>
+		</div>
+		<div id="status"></div>
+
+		<img id="img" alt="360 image">
+		<video id="video" loop playsinline preload="auto" crossorigin="anonymous"></video>
+
+		<script type="module" src="panorama.js"></script>
 	</body>
 </html>
