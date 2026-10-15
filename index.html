@@ -77,7 +77,8 @@
 	<body>
 		<div id="container"></div>
 		<div id="ui">
-			<button id="play" type="button">Play</button>
+			<button id="play" type="button" hidden>Play</button>
+			<button id="unmute" type="button" hidden>Unmute</button>
 			<button id="motion" type="button" hidden>Enable motion control</button>
 			<button id="fullscreen" type="button">Fullscreen</button>
 			<button id="vr" type="button">Cardboard (side by side)</button>
@@ -85,7 +86,7 @@
 		<div id="status"></div>
 
 		<img id="img" alt="360 image">
-		<video id="video" loop playsinline preload="auto" crossorigin="anonymous"></video>
+		<video id="video" loop muted playsinline preload="auto" crossorigin="anonymous"></video>
 
 		<script type="module" src="panorama.js"></script>
 	</body>

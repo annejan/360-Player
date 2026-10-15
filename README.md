@@ -40,6 +40,9 @@ Examples:
 
 ## Controls
 
+- Video **starts automatically, muted** (that is all browsers allow without a
+  tap). **Unmute** appears when the clip has sound; **Play** appears only if
+  the browser blocked autoplay.
 - **Drag** (mouse, touch or pen) to look around, **scroll** to zoom.
 - **Motion control** follows the phone's orientation. iOS asks for permission
   the first time; tap *Enable motion control*. Dragging still turns you around

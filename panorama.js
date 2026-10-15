@@ -189,13 +189,24 @@ if (isVideo) {
 	tex = new THREE.VideoTexture(video);
 	tex.minFilter = THREE.LinearFilter;
 	tex.generateMipmaps = false;
+	// Browsers only autoplay muted video, so start muted right away and offer
+	// an Unmute button once we know the clip has sound. If even muted
+	// autoplay is refused, fall back to a Play button (a user gesture).
+	const hasAudio = () =>
+		video.mozHasAudio
+		|| (video.audioTracks && video.audioTracks.length > 0)
+		|| video.webkitAudioDecodedByteCount > 0
+		// no way to tell on this browser, so offer the button anyway
+		|| (video.mozHasAudio === undefined && !video.audioTracks && video.webkitAudioDecodedByteCount === undefined);
+	const updateUnmute = () => { $("unmute").hidden = !(video.muted && !video.paused && hasAudio()); };
 	const playVideo = async () => {
 		try {
 			await video.play();
-			$("play").hidden = true;
 			say("");
 		} catch (err) {
-			if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
+			if (err.name === "NotAllowedError") {
+				$("play").hidden = false; // autoplay blocked, needs a tap
+			} else if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
 				say(`Playback failed: ${err.message}`);
 			} else {
 				// still picking a source or buffering, try again when playable
@@ -204,9 +215,14 @@ if (isVideo) {
 			}
 		}
 	};
-	$("play").addEventListener("click", playVideo);
+	$("play").addEventListener("click", () => { video.muted = false; playVideo(); });
+	$("unmute").addEventListener("click", () => { video.muted = false; updateUnmute(); });
 	video.addEventListener("play", () => { $("play").hidden = true; });
-	video.addEventListener("pause", () => { $("play").hidden = false; });
+	video.addEventListener("pause", () => { $("play").hidden = false; updateUnmute(); });
+	video.addEventListener("playing", updateUnmute);
+	video.addEventListener("timeupdate", updateUnmute); // audio byte counts fill in after a moment
+	video.addEventListener("volumechange", updateUnmute);
+	playVideo();
 } else {
 	$("play").hidden = true;
 	img.src = ext ? src : `${src}.jpg`;
