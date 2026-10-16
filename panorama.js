@@ -100,7 +100,7 @@ const applyPointerRotation = () => {
 
 const onPointerMove = (ev) => {
 	const scale = 0.0035 * (camera.fov / 75);
-	lat = Math.min(Math.max(-Math.PI / 2, lat - ev.movementY * scale), Math.PI / 2);
+	lat = Math.min(Math.max(-latMax, lat - ev.movementY * scale), latMax);
 	lon -= ev.movementX * scale;
 	applyPointerRotation();
 };
@@ -118,8 +118,9 @@ view.addEventListener("pointercancel", stopDrag);
 // [zoom with the mouse wheel]
 view.addEventListener("wheel", (ev) => {
 	ev.preventDefault();
-	camera.fov = Math.min(Math.max(30, camera.fov + ev.deltaY * 0.05), 110);
+	camera.fov = Math.min(Math.max(fovMin, camera.fov + ev.deltaY * 0.05), fovMax);
 	camera.updateProjectionMatrix();
+	limitLat();
 }, { passive: false });
 
 // [camera rotation by the device orientation sensors on phones and tablets]
@@ -132,8 +133,9 @@ const getOrientation = () => {
 	return 0;
 };
 const rotm = new THREE.Quaternion();
-const devm = new THREE.Quaternion();
+const scrm = new THREE.Quaternion();
 const yawm = new THREE.Quaternion();
+const Z_AXIS = new THREE.Vector3(0, 0, 1);
 const gyroSensor = (ev) => {
 	const alpha = ev.alpha || 0;
 	const beta = ev.beta || 0;
@@ -142,15 +144,15 @@ const gyroSensor = (ev) => {
 	gyroActive = true;
 	const angle = getOrientation();
 
-	// device rot axis order Z-X-Y as alpha, beta, gamma
-	// portrait mode Z=rear->front(screen), X=left->right, Y=near->far(cam)
-	// => map Z-X-Y to 3D world axes as:
-	// - portrait  => y-x-z
-	// - landscape => y-z-x
-	const rotType = (angle === 0 || angle === 180) ? "YXZ" : "YZX";
-	rotm.setFromEuler(euler.set(beta * d2r, alpha * d2r, -gamma * d2r, rotType));
-	devm.setFromEuler(euler.set(0, -angle * d2r, 0));
-	rotm.multiply(devm).multiply(eyem); // rot = (rot x dev) x eye
+	// The device's rotation is Z-X'-Y'' (alpha, beta, gamma), which is YXZ in
+	// three.js's world axes, in every screen orientation. Then the camera looks
+	// out of the back of the device rather than its top (eyem), and last the
+	// screen's own rotation is undone round the viewing axis, Z. (Switching to
+	// another Euler order in landscape, as before, flipped the view when you
+	// looked up.) The same steps as three.js's old DeviceOrientationControls.
+	rotm.setFromEuler(euler.set(beta * d2r, alpha * d2r, -gamma * d2r, "YXZ"));
+	rotm.multiply(eyem);
+	rotm.multiply(scrm.setFromAxisAngle(Z_AXIS, -angle * d2r));
 	yawm.setFromAxisAngle(Y_AXIS, lon); // let dragging turn you around while using the gyro
 	camera.quaternion.copy(yawm.multiply(rotm));
 };
