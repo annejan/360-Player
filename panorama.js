@@ -1,6 +1,7 @@
 /**
- *    360 panorama viewer for stills and video, either equirectangular (2:1)
- *    or raw 360fly fisheye (square, 360x240 degrees).
+ *    360 panorama viewer for stills and video: equirectangular (2:1), raw
+ *    360fly fisheye (square, 360x240 degrees), or a cylinder for planar
+ *    panoramas (a wide strip that goes all the way round, but not up and down).
  *    2016-2026 Anne Jan Brouwer
  *
  *    Based on code from https://gist.github.com/bellbind/d2be9cc09bf6241f255d
@@ -10,7 +11,9 @@
  *      src=<name>        media base name (default "dak-raw"), or a full file
  *                        name such as "sitting.webm" or "standing.jpg"
  *      type=video|image  what <name> refers to (default "video")
- *      mode=raw|equirect raw 360fly fisheye (default) or equirectangular
+ *      mode=raw|equirect|cylinder
+ *                        raw 360fly fisheye (default), equirectangular, or a
+ *                        cylinder for a planar panorama strip
  *      vr=1              start in side-by-side cardboard mode
  */
 
@@ -24,7 +27,9 @@ const ext = (src.match(/\.(\w+)$/) || [])[1]?.toLowerCase();
 const isVideo = ext
 	? ["mp4", "webm", "ogv", "mov", "m4v"].includes(ext)
 	: (params.get("type") || "video") !== "image";
-const raw = (params.get("mode") || "raw") !== "equirect";
+const mode = params.get("mode") || "raw";
+const raw = mode === "raw";
+const cylinder = mode === "cylinder";
 let cardboard = params.get("vr") === "1";
 
 // [shaders for raw 360fly footage]
@@ -73,11 +78,17 @@ window.addEventListener("resize", () => {
 	camera.aspect = w / h;
 	camera.updateProjectionMatrix();
 	renderer.setSize(w, h);
+	limitLat();
 });
 
 // [camera rotation by pointer: mouse, touch or pen]
 let lon = 0;
 let lat = 0;
+// How far you can look up and down, and zoom: all the way on a sphere; on a
+// cylinder only as far as the strip goes (see fitCylinder).
+let latMax = Math.PI / 2;
+let fovMin = 30;
+let fovMax = 110;
 let gyroActive = false;
 const euler = new THREE.Euler();
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -249,12 +260,40 @@ if (raw) {
 }
 
 // [panorama space matched with the style of the panorama image]
-const geom = new THREE.SphereGeometry(500, 64, 64); // sphere type 64 splines
-//const geom = new THREE.SphereGeometry(500, 64, 32, 0, 2 * Math.PI, 0, 0.5 * Math.PI); // dome type
-//const geom = new THREE.CylinderGeometry(500, 500, 500, 64); // tube type
-geom.scale(1, 1, -1); // surface inside
+const R = 500;
 const scene = new THREE.Scene();
-scene.add(new THREE.Mesh(geom, mat));
+const mesh = new THREE.Mesh(new THREE.SphereGeometry(R, 64, 64), mat); // sphere type 64 splines
+mesh.geometry.scale(1, 1, -1); // surface inside
+scene.add(mesh);
+
+// The strip's own height for the cylinder: a w x h image round a circle of
+// 2 pi R is 2 pi R h / w high, so nothing is stretched.
+function limitLat() {
+	if (!cylinder || !mesh.userData.halfHeight) return;
+	const half = Math.atan(mesh.userData.halfHeight / R); // the strip's top edge, seen from the middle
+	latMax = Math.max(0, half - THREE.MathUtils.degToRad(camera.fov) / 2);
+	lat = Math.min(Math.max(-latMax, lat), latMax);
+	applyPointerRotation();
+}
+function fitCylinder(w, h) {
+	const height = 2 * Math.PI * R * h / w;
+	mesh.geometry.dispose();
+	mesh.geometry = new THREE.CylinderGeometry(R, R, height, 128, 1, true);
+	mesh.geometry.scale(-1, 1, 1); // surface inside, the picture the right way round
+	mesh.userData.halfHeight = height / 2;
+	const strip = THREE.MathUtils.radToDeg(2 * Math.atan(height / 2 / R)); // the strip's height, in degrees
+	fovMax = Math.min(110, strip * 0.98);
+	fovMin = Math.min(20, fovMax);
+	camera.fov = Math.min(75, fovMax);
+	camera.updateProjectionMatrix();
+	limitLat();
+}
+if (cylinder && !isVideo) {
+	const fit = () => fitCylinder(img.naturalWidth, img.naturalHeight);
+	if (img.complete && img.naturalWidth) fit(); else img.addEventListener("load", fit);
+} else if (cylinder) {
+	video.addEventListener("loadedmetadata", () => fitCylinder(video.videoWidth, video.videoHeight));
+}
 
 // [fullscreen and cardboard]
 const docEl = document.documentElement;

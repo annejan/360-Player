@@ -28,7 +28,7 @@ Everything is configured through query parameters:
 |-----------|----------------------|-----------|------------------------------------------------------------------|
 | `src`     | base name or file    | `dak-raw` | `name` loads `name.mp4` + `name.webm` (or `name.jpg` for images) |
 | `type`    | `video`, `image`     | `video`   | what `src` refers to when it has no extension                    |
-| `mode`    | `raw`, `equirect`    | `raw`     | raw 360fly fisheye or equirectangular projection                 |
+| `mode`    | `raw`, `equirect`, `cylinder` | `raw` | raw 360fly fisheye, equirectangular, or a cylinder for planar panoramas |
 | `vr`      | `1`                  | off       | start in side-by-side cardboard mode                             |
 
 Examples:
@@ -37,6 +37,21 @@ Examples:
 - `index.html?src=sitting-low` – a smaller video
 - `index.html?src=standing&type=image` – a still
 - `index.html?src=pano.jpg&mode=equirect` – an equirectangular still
+- `index.html?src=panoramas/kerk.jpg&mode=cylinder` – a planar panorama strip
+
+## Cylinder mode
+
+Planar panoramas are wide strips (5:1 up to 15:1) that go all the way round
+but not up and down. `mode=cylinder` wraps them round a cylinder as high as
+the strip is, so nothing is stretched, and keeps the view inside the strip:
+you look up and down and zoom only as far as the picture goes.
+
+## Gallery
+
+`gallery.html` lists the videos and the panoramas in `panoramas/` (planar
+panoramas from hacker camps and congresses: CCC 2011, OHM2013, X2012 and
+more), with thumbnails in `thumbs/`. The panoramas are scaled to at most 8192
+pixels wide, the largest texture most phones take.
 
 ## Controls
 
