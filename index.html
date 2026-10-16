@@ -28,20 +28,24 @@
 			#container:active { cursor: grabbing; }
 			canvas { display: block; }
 			img, video { display: none; }
+			/* A bar at the bottom, so the buttons do not sit in the middle of the view. */
 			#ui {
 				position: fixed;
-				inset: 0;
+				left: 0;
+				right: 0;
+				bottom: calc(32px + env(safe-area-inset-bottom, 0));
 				display: flex;
-				flex-direction: column;
+				flex-wrap: wrap;
 				align-items: center;
 				justify-content: center;
-				gap: 12px;
+				gap: 10px;
+				padding: 0 12px;
 				pointer-events: none;
 			}
 			#ui button {
 				pointer-events: auto;
-				min-width: 160px;
-				padding: 12px 20px;
+				min-width: 0;
+				padding: 10px 18px;
 				border: 1px solid rgba(255, 255, 255, 0.6);
 				border-radius: 999px;
 				background: rgba(0, 0, 0, 0.55);
@@ -64,6 +68,20 @@
 				pointer-events: none;
 			}
 			#status:empty { display: none; }
+			#gallery {
+				position: fixed;
+				top: calc(12px + env(safe-area-inset-top, 0));
+				left: 12px;
+				padding: 6px 14px;
+				border: 1px solid rgba(255, 255, 255, 0.5);
+				border-radius: 999px;
+				background: rgba(0, 0, 0, 0.55);
+				color: #fff;
+				font-size: 14px;
+				text-decoration: none;
+				backdrop-filter: blur(6px);
+			}
+			#gallery:hover, #gallery:focus-visible { background: rgba(255, 255, 255, 0.2); outline: none; }
 		</style>
 		<script type="importmap">
 			{
@@ -84,6 +102,7 @@
 			<button id="vr" type="button">Cardboard (side by side)</button>
 		</div>
 		<div id="status"></div>
+		<a id="gallery" href="gallery.html">← Gallery</a>
 
 		<img id="img" alt="360 image">
 		<video id="video" loop muted playsinline preload="auto" crossorigin="anonymous"></video>

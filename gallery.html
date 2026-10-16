@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>360 gallery</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="360° videos from a 360fly camera, played raw, and planar panoramas from hacker camps and congresses: CCC 2011, OHM2013, X2012 and more.">
+		<style>
+			:root { --bg: #000; --fg: #fff; --muted: #9a9a9a; --line: #262626; --accent: #24cafe; }
+			* { box-sizing: border-box; }
+			body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, sans-serif; }
+			main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+			h1 { margin: 0 0 4px; font-size: 1.6rem; letter-spacing: 0.04em; }
+			p.lede { margin: 0 0 24px; color: var(--muted); }
+			h2 { margin: 32px 0 12px; font-size: 0.85rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); }
+			ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+			a { display: block; color: inherit; text-decoration: none; border: 1px solid var(--line); background: #0b0b0b; }
+			a:hover, a:focus-visible { border-color: var(--accent); outline: none; }
+			img { display: block; width: 100%; aspect-ratio: 3 / 1; object-fit: cover; background: #111; }
+			.video img { aspect-ratio: 16 / 9; }
+			.t { display: block; padding: 8px 12px 0; font-weight: 600; }
+			.m { display: block; padding: 0 12px 10px; font-size: 0.85rem; color: var(--muted); }
+			footer { margin-top: 40px; font-size: 0.85rem; color: var(--muted); }
+			footer a { display: inline; border: 0; background: none; color: var(--accent); }
+		</style>
+	</head>
+	<body>
+		<main>
+			<h1>360°</h1>
+			<p class="lede">Drag, swipe or turn your phone to look around. Fullscreen and Cardboard (side by side) from the player.</p>
+			<h2>Video</h2>
+			<ul class="video">
+			<li><a href="index.html?src=dak-raw"><img src="thumbs/dak-raw.jpg" alt="" loading="lazy"><span class="t">Rooftop</span><span class="m">360° video</span></a></li>
+			<li><a href="index.html?src=sitting"><img src="thumbs/sitting.jpg" alt="" loading="lazy"><span class="t">Sitting</span><span class="m">360° video</span></a></li>
+			<li><a href="index.html?src=standing"><img src="thumbs/standing.jpg" alt="" loading="lazy"><span class="t">Standing</span><span class="m">360° video</span></a></li>
+			</ul>
+			<h2>Panoramas</h2>
+			<ul>
+			<li><a href="index.html?src=panoramas/balkon.jpg&amp;mode=cylinder"><img src="thumbs/balkon.jpg" alt="" loading="lazy"><span class="t">Balkon</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/ccc2011.jpg&amp;mode=cylinder"><img src="thumbs/ccc2011.jpg" alt="" loading="lazy"><span class="t">CCC 2011</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/greenlake.jpg&amp;mode=cylinder"><img src="thumbs/greenlake.jpg" alt="" loading="lazy"><span class="t">Green Lake</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/kamiros.jpg&amp;mode=cylinder"><img src="thumbs/kamiros.jpg" alt="" loading="lazy"><span class="t">Kamiros</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/kerk.jpg&amp;mode=cylinder"><img src="thumbs/kerk.jpg" alt="" loading="lazy"><span class="t">Kerk</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/nurdspace.jpg&amp;mode=cylinder"><img src="thumbs/nurdspace.jpg" alt="" loading="lazy"><span class="t">NURDspace</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/ohm2013.jpg&amp;mode=cylinder"><img src="thumbs/ohm2013.jpg" alt="" loading="lazy"><span class="t">OHM2013</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/outside-line.jpg&amp;mode=cylinder"><img src="thumbs/outside-line.jpg" alt="" loading="lazy"><span class="t">Outside the line</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/party-area.jpg&amp;mode=cylinder"><img src="thumbs/party-area.jpg" alt="" loading="lazy"><span class="t">Party area</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/tata.jpg&amp;mode=cylinder"><img src="thumbs/tata.jpg" alt="" loading="lazy"><span class="t">Tata</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/tata-two.jpg&amp;mode=cylinder"><img src="thumbs/tata-two.jpg" alt="" loading="lazy"><span class="t">Tata, again</span><span class="m">panorama, all the way round</span></a></li>
+			<li><a href="index.html?src=panoramas/x2012.jpg&amp;mode=cylinder"><img src="thumbs/x2012.jpg" alt="" loading="lazy"><span class="t">X2012</span><span class="m">panorama, all the way round</span></a></li>
+			</ul>
+			<footer>Player and pictures: Anne Jan Brouwer. Code on <a href="https://github.com/annejan/360-Player">GitHub</a>.</footer>
+		</main>
+	</body>
+</html>
